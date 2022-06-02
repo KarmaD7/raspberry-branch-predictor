@@ -14,6 +14,10 @@
 /* TASK1 */
 // TODO: choose another 4 ID registers, and find their offsets in documentation
 #define MIDR_EL1                   0xD00
+#define ID_AA64PFR0_EL1            0xD20
+#define ID_AA64DFR0_EL1            0xD28
+#define ID_AA64ISAR0_EL1           0xD30
+#define ID_AA64MMFR0_EL1           0xD38 
 
 
 #define DEBUG_REGISTER_SIZE        0x1000
@@ -21,9 +25,9 @@
 
 /* TASK1 */
 // TODO: find debug register base address of CPU1, CPU2 and CPU3 [Note: default values below are not correct]
-#define DEBUG_REGISTER_ADDR_CPU1   0x40000000
-#define DEBUG_REGISTER_ADDR_CPU2   0x40000000
-#define DEBUG_REGISTER_ADDR_CPU3   0x40000000
+#define DEBUG_REGISTER_ADDR_CPU1   0x40032000
+#define DEBUG_REGISTER_ADDR_CPU2   0x40034000
+#define DEBUG_REGISTER_ADDR_CPU3   0x40036000
 
 typedef uint32_t reg32_t;
 typedef uint64_t reg64_t;
@@ -45,16 +49,29 @@ static void access_register_via_system_instruction(void* junk) {
     /* TASK1 */
     // TODO: use system instrucion to access 5 ID registers, and store the value to val1[0]~val1[5]
     // hint: asm volatile(...); val1[X] = reg;
-
+    asm volatile("MRS %[result], MIDR_EL1" : [result] "=r" (reg));
+    val1[0] = reg;
+    asm volatile("MRS %[result], ID_AA64PFR0_EL1" : [result] "=r" (reg));
+    val1[1] = reg;
+    asm volatile("MRS %[result], ID_AA64DFR0_EL1" : [result] "=r" (reg));
+    val1[2] = reg;
+    asm volatile("MRS %[result], ID_AA64ISAR0_EL1" : [result] "=r" (reg));
+    val1[3] = reg;
+    asm volatile("MRS %[result], ID_AA64MMFR0_EL1" : [result] "=r" (reg));
+    val1[4] = reg;
 }
 
 static void access_register_via_memory_map(void* addr) {
     void __iomem* map_addr = (void __iomem*) addr;
-
+   
     /* TASK1 */
     // TODO: use memory map to access 5 ID registers, and store the value to val2[0]~val2[5]
     // hint: val2[X] = ioread64(...);
-
+    val2[0] = ioread64(map_addr + MIDR_EL1);
+    val2[1] = ioread64(map_addr + ID_AA64PFR0_EL1);
+    val2[2] = ioread64(map_addr + ID_AA64DFR0_EL1);
+    val2[3] = ioread64(map_addr + ID_AA64ISAR0_EL1);
+    val2[4] = ioread64(map_addr + ID_AA64MMFR0_EL1);
 }
 
 bool check(void) {
