@@ -6,7 +6,7 @@
 /* TASK1 */
 // TODO: find debug register base address of CPU3.
 // Note: You should pass task1 successfully and change the correct address. The machine will CRASH if you run the code with a wrong base address!
-#define DEBUG_REGISTER_ADDR_CPU3             
+#define DEBUG_REGISTER_ADDR_CPU3             0x40036000
 #define DEBUG_REGISTER_SIZE_CPU3             0x1000
 
 // 0x4003b000 is the base address of the cross trigger interface registers on Core 3
@@ -32,6 +32,7 @@
 #define ERR                                  (1 <<  6)
 #define HDE				                     (1 << 14)
 #define SSD                                  (1 << 16)
+#define MA                                   (1 << 20)
 #define ITE                                  (1 << 24)
 #define TXfull                               (1 << 29)
 #define RXfull                               (1 << 30)
