@@ -1,15 +1,14 @@
+#include <stdio.h>
+
 int main() {
-  int a = 1;
-  int b = 7;
-  for (int i = 0; i < 100; ++i) {
-    if (a == 1) {
-      b = 6;
+  int dummy = 19260817;
+  int jmp = 0;
+  int cnt = 0;
+  for (int i = 0; i < 1000; ++i) {
+    jmp = cnt > 1;
+    if (jmp) {
+      dummy += 1;
     }
-    if (a == 3) {
-      b = 7;
-    }
-    if (b == 6) {
-      a = 3;
-    }
+    cnt = (cnt + 1) % 4;
   }
 }

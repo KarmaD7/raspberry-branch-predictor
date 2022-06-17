@@ -47,11 +47,9 @@ reg64_t read_64bit_from_target(void __iomem* debug, ins_t ins) {
     execute_ins_via_itr(debug, ins);
 
     // Step 2. check EDSCR,TXfull before each transfer [hint: use circulation obstruction] (Your code)
-    while (true) {
+    reg = ioread32(debug + EDSCR_EL1);
+    while ((reg & TXfull) != TXfull) {
         reg = ioread32(debug + EDSCR_EL1);
-        if ((reg & TXfull) == TXfull) {
-            break;
-        }
     }
 
     // Step 3. read value from DBGDTRRX and DBGDTRTX [note: you must take reading order into account, first read ... , and then read ...] (Your code)
@@ -77,11 +75,9 @@ void send_64bit_to_target(void __iomem* debug, ins_t ins, reg64_t val) {
     iowrite32(hval, debug + DBGDTRTX_EL1);
 
     // Step 2. check EDSCR.{RXfull/TXfull} before each transfer (Your code)
-    while (true) {
+    reg = ioread32(debug + EDSCR_EL1);
+    while ((reg & RXfull) != RXfull && (reg & TXfull) != TXfull) {
         reg = ioread32(debug + EDSCR_EL1);
-        if ((reg & RXfull) == RXfull) {
-            break;
-        }
         /* code */
     }
     
@@ -98,8 +94,8 @@ uint32_t read_memory_via_dcc(void __iomem* debug, va_t va) {
     lva = va & 0xffffffff;
     // TODO: Complete this function.
     // Step 1. write the address to DBGDTR_EL0 via the memory mapped interface (Your code)
-    iowrite32(hva, debug + DBGDTRTX_EL1);
     iowrite32(lva, debug + DBGDTRRX_EL1);
+    iowrite32(hva, debug + DBGDTRTX_EL1);
     // Step 2. put the memory address to X0 [hint: execute_ins_via_itr(debug, ...); 0xd5330400 <=> mrs X0, DBGDTR_EL0] (Your code)
     execute_ins_via_itr(debug, 0xd5330400);
     // Step 3. a dummy instruction to set the EDSCR.TXfull bit [hint: 0xd5130400 <=> msr DBGDTR_EL0, X0] (Your code)
@@ -120,4 +116,4 @@ uint32_t read_memory_via_dcc(void __iomem* debug, va_t va) {
 
     // Step 7. read DBGDTRTX_EL0 again to get the value at the target address (Done)
     return ioread32(debug + DBGDTRTX_EL1);
-}
+}cd 
